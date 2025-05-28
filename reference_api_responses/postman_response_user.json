@@ -1,0 +1,9 @@
+{
+  "userId": "generated-user-id-12345",
+  "loginName": "your_login_name",
+  "email": "your_email",
+  "isAnonymous": false,
+  "isAdministrator": false,
+  "errorCode": 0,
+  "errorMessage": ""
+}

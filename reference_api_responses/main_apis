@@ -1,0 +1,9 @@
+Queried on 04/08/2025
+
+https://titantv.com/api/user/<user info from TitanTV login>
+
+https://titantv.com/api/lineup/<user info from TitanTV login>
+
+https://titantv.com/api/schedule/<from user info TitanTV/ login><from TitanTV lineup ID api>/<yyyymmddhhmm response from api>/300
+
+https://titantv.com/api/channel/<from user info TitanTV/ login><from TitanTV lineup ID api>
