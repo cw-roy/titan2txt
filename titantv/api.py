@@ -18,7 +18,7 @@ def get_api_urls(user_id, lineup_id):
 
     # Set the duration in minutes. 24 hours = 1440 minutes
     # 14 days = 14 * 24 * 60 = 20160 minutes
-    duration = 120
+    duration = 60
 
     return {
         "channels": f"https://titantv.com/api/channel/{user_id}/{lineup_id}",

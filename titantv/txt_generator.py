@@ -9,12 +9,20 @@ from titantv.config import TARGET_CHANNELS
 def generate_txt(data, output_path):
     logging.info("Generating TXT file...")
 
-    # Filter channels based on TARGET_CHANNELS
+    # Filter channels based on TARGET_CHANNELS (major.minor format)
     filtered_channels = [
         ch
         for ch in data["channels"]
         if f"{ch['majorChannel']}.{ch['minorChannel']}" in TARGET_CHANNELS
     ]
+
+    # Create a set of allowed channelIds (int) for fast lookup
+    allowed_channel_ids = {int(ch["channelId"]) for ch in filtered_channels}
+
+    # Debug logging to verify
+    logging.info(f"Filtered channels count: {len(filtered_channels)}")
+    logging.info(f"Allowed channel IDs: {allowed_channel_ids}")
+    logging.info(f"Total programs in schedule: {len(data['schedule'])}")
 
     # Prepare text output
     lines = []
@@ -37,8 +45,14 @@ def generate_txt(data, output_path):
         lines.append("")
 
     lines.append("Programs:")
+    program_count = 0
     for prog in data["schedule"]:
-        if str(prog["channelId"]) in [ch["channelId"] for ch in filtered_channels]:
+        if int(prog["channelId"]) in allowed_channel_ids:
+            program_count += 1
+            # Find the channel for additional info (like call sign)
+            ch = next((c for c in filtered_channels if int(c["channelId"]) == int(prog["channelId"])), None)
+            if ch:
+                lines.append(f"Channel: {ch['callSign']} ({ch['majorChannel']}.{ch['minorChannel']})")
             lines.append(f"Program ID: {prog['eventId']}")
             lines.append(f"Title: {prog['title']}")
             lines.append(f"Description: {prog['description']}")
@@ -48,11 +62,11 @@ def generate_txt(data, output_path):
             lines.append(f"TV Rating: {prog.get('tvRating', '')}")
             lines.append("")
 
-    # Ensure the output path is platform-agnostic
-    output_file_path = output_path  # Use output_path directly
+    logging.info(f"Total programs written: {program_count}")
 
     # Write to file
-    with open(output_file_path, "w", encoding="utf-8") as txt_file:
+    with open(output_path, "w", encoding="utf-8") as txt_file:
         txt_file.write("\n".join(lines))
 
-    logging.info(f"TXT file written to {output_file_path}")
+    logging.info(f"TXT file written to {output_path}")
+
