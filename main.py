@@ -9,12 +9,12 @@ from titantv.api import fetch_json, get_api_urls
 from titantv.auth import load_credentials
 from titantv.config import CONFIG
 from titantv.logger import setup_logging
-from titantv.mxf_generator import generate_mxf
 from titantv.processor import (
     process_channels_data,
     process_lineup_data,
     process_schedule_data,
 )
+from titantv.txt_generator import generate_txt
 from titantv.utils import get_schedule_start_time, save_json_data
 
 
@@ -23,7 +23,7 @@ def main():
     data_folder = os.path.join(CONFIG["data_folder"])
     logs_folder = os.path.join(CONFIG["logs_folder"])
     output_json = os.path.join(CONFIG["output_json"])
-    output_mxf = os.path.join(CONFIG["output_mxf"])
+    output_txt = os.path.join(data_folder, "listings.txt")
     log_file = os.path.join(CONFIG["log_file"])
 
     os.makedirs(data_folder, exist_ok=True)
@@ -36,7 +36,8 @@ def main():
     logging.info(f"Logs folder: {logs_folder}")
     logging.info(f"Log file: {log_file}")
     logging.info(f"Output JSON: {output_json}")
-    logging.info(f"Output MXF: {output_mxf}")
+    logging.info(f"Output TXT: {CONFIG['output_txt']}")
+    logging.info("Starting TitanTV data processing...")
 
     try:
         credentials = load_credentials()
@@ -59,7 +60,7 @@ def main():
         if CONFIG["debug_mode"]:
             save_json_data(combined_data, output_json)
 
-        generate_mxf(combined_data, output_mxf)
+        generate_txt(combined_data, output_txt)
 
     except Exception as e:
         logging.error(f"Error during execution: {e}")
