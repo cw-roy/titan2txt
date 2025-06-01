@@ -9,6 +9,10 @@ from titantv.config import TARGET_CHANNELS
 def generate_txt(data, output_path):
     logging.info("Generating TXT file...")
 
+    # Collect all channel IDs present in the schedule
+    schedule_ids = {int(p["channelId"]) for p in data["schedule"]}
+    logging.info(f"Schedule channel IDs: {schedule_ids}")
+
     # Filter channels based on TARGET_CHANNELS (major.minor format)
     filtered_channels = [
         ch
@@ -23,6 +27,19 @@ def generate_txt(data, output_path):
     logging.info(f"Filtered channels count: {len(filtered_channels)}")
     logging.info(f"Allowed channel IDs: {allowed_channel_ids}")
     logging.info(f"Total programs in schedule: {len(data['schedule'])}")
+
+    # Log any schedule entries with channel IDs not in allowed channels
+    mismatched_channel_ids = schedule_ids - allowed_channel_ids
+    if mismatched_channel_ids:
+        logging.warning(
+            f"Schedule contains programs for channel IDs not in allowed channels: {mismatched_channel_ids}"
+        )
+        for prog in data["schedule"]:
+            if int(prog["channelId"]) in mismatched_channel_ids:
+                logging.warning(
+                    f"Program with ID {prog['eventId']} assigned to unknown channel ID {prog['channelId']} "
+                    f"title: {prog['title']}"
+                )
 
     # Prepare text output
     lines = []
@@ -50,9 +67,18 @@ def generate_txt(data, output_path):
         if int(prog["channelId"]) in allowed_channel_ids:
             program_count += 1
             # Find the channel for additional info (like call sign)
-            ch = next((c for c in filtered_channels if int(c["channelId"]) == int(prog["channelId"])), None)
+            ch = next(
+                (
+                    c
+                    for c in filtered_channels
+                    if int(c["channelId"]) == int(prog["channelId"])
+                ),
+                None,
+            )
             if ch:
-                lines.append(f"Channel: {ch['callSign']} ({ch['majorChannel']}.{ch['minorChannel']})")
+                lines.append(
+                    f"Channel: {ch['callSign']} ({ch['majorChannel']}.{ch['minorChannel']})"
+                )
             lines.append(f"Program ID: {prog['eventId']}")
             lines.append(f"Title: {prog['title']}")
             lines.append(f"Description: {prog['description']}")
@@ -69,4 +95,3 @@ def generate_txt(data, output_path):
         txt_file.write("\n".join(lines))
 
     logging.info(f"TXT file written to {output_path}")
-

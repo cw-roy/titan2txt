@@ -12,7 +12,6 @@ CONFIG = {
     "data_folder": os.path.join("data"),
     "logs_folder": os.path.join("logs"),
     "output_json": os.path.join("data", "api_output.json"),
-    # "output_mxf": os.path.join("data", "listings.mxf"),
     "output_txt": os.path.join("data", "listings.txt"),
     "log_file": "titantv.log",  # The log file will be handled by the logger setup
 }

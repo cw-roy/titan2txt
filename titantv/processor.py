@@ -31,21 +31,25 @@ def process_channels_data(channels_data):
 
 
 def process_schedule_data(schedule_data):
+
+    import logging
+    logging.info(f"schedule_data type: {type(schedule_data)}")
+    logging.info(f"first item type: {type(schedule_data[0]) if schedule_data else 'empty'}")
+
     schedule = []
-    for channel in schedule_data.get("channels", []):
-        for day in channel.get("days", []):
-            for event in day.get("events", []):
-                schedule.append(
-                    {
-                        "channelId": channel["channelIndex"],
-                        "eventId": event["eventId"],
-                        "startTime": event["startTime"],
-                        "endTime": event["endTime"],
-                        "title": event["title"],
-                        "description": event["description"],
-                        "programType": event["programType"],
-                        "tvRating": event.get("tvRating", ""),
-                        "showCard": event.get("showCard", ""),
-                    }
-                )
+    for event in schedule_data:
+        schedule.append(
+            {
+                "channelId": event["channelId"],
+                "eventId": event["eventId"],
+                "startTime": event["startTime"],
+                "endTime": event["endTime"],
+                "title": event["title"],
+                "description": event["description"],
+                "programType": event.get("programType", ""),
+                "tvRating": event.get("tvRating", ""),
+                "showCard": event.get("showCard", ""),
+            }
+        )
     return schedule
+
